@@ -1,0 +1,83 @@
+.titulo-dialogo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 24px 24px 16px;
+  color: #3f51b5;
+
+  mat-icon {
+    font-size: 28px;
+    height: 28px;
+    width: 28px;
+  }
+}
+
+.formulario-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 0 24px;
+  max-height: 70vh;
+  overflow-y: auto;
+
+  .campo-formulario,
+  .campo-metade {
+    width: 100%;
+  }
+
+  .linha-formulario {
+    display: flex;
+    gap: 20px;
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .campo-metade {
+      flex: 1;
+    }
+  }
+
+  mat-form-field {
+    .mat-icon {
+      color: rgba(0, 0, 0, 0.54);
+    }
+
+    &.mat-form-field-invalid {
+      .mat-icon {
+        color: #f44336;
+      }
+    }
+  }
+}
+
+.acoes-dialogo {
+  padding: 16px 24px 24px;
+  border-top: 1px solid #e0e0e0;
+  margin-top: 8px;
+
+  .botao-cancelar {
+    margin-right: 12px;
+  }
+
+  .botao-salvar {
+    min-width: 120px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .spinner-botao {
+      margin-right: 8px;
+    }
+  }
+}
+
+
+::ng-deep .dialogo-formulario {
+  .mat-mdc-dialog-container {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+}

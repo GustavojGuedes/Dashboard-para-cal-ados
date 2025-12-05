@@ -1,0 +1,40 @@
+{
+  "produtos": [
+    {
+      "id": 1,
+      "nome": "Tênis Esportivo Nike Air Max",
+      "descricao": "Tênis esportivo com amortecimento Air Max para máximo conforto",
+      "preco": 499.90,
+      "categoria": "Esportivo",
+      "marca": "Nike",
+      "tamanho": "42",
+      "cor": "Preto/Branco",
+      "estoque": 50,
+      "dataCriacao": "2024-01-15"
+    },
+    {
+      "id": 2,
+      "nome": "Sapato Social Derby",
+      "descricao": "Sapato social em couro legítimo para ocasiões formais",
+      "preco": 299.90,
+      "categoria": "Social",
+      "marca": "Via Marte",
+      "tamanho": "41",
+      "cor": "Marrom",
+      "estoque": 25,
+      "dataCriacao": "2024-01-10"
+    },
+    {
+      "id": 3,
+      "nome": "Chinelo Havaianas Slim",
+      "descricao": "Chinelo confortável para o dia a dia",
+      "preco": 39.90,
+      "categoria": "Casual",
+      "marca": "Havaianas",
+      "tamanho": "43",
+      "cor": "Azul",
+      "estoque": 100,
+      "dataCriacao": "2024-01-05"
+    }
+  ]
+}

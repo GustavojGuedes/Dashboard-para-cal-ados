@@ -1,0 +1,171 @@
+<h2 mat-dialog-title class="titulo-dialogo">
+  <mat-icon>{{ modoEdicao ? 'edit' : 'add_circle' }}</mat-icon>
+  {{ tituloDialogo }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="formularioProduto" (ngSubmit)="onSubmit()" class="formulario-container">
+    <!-- Nome -->
+    <mat-form-field appearance="outline" class="campo-formulario">
+      <mat-label>Nome do Produto *</mat-label>
+      <input 
+        matInput 
+        formControlName="nome" 
+        placeholder="Ex: Tênis Nike Air Max 270"
+        maxlength="100"
+      />
+      <mat-icon matSuffix>badge</mat-icon>
+      <mat-hint align="end">{{ controles['nome'].value?.length || 0 }}/100</mat-hint>
+      @if (controles['nome'].hasError('required')) {
+        <mat-error>Nome é obrigatório</mat-error>
+      }
+      @if (controles['nome'].hasError('minlength')) {
+        <mat-error>Nome deve ter pelo menos 3 caracteres</mat-error>
+      }
+    </mat-form-field>
+
+    <!-- Descrição -->
+    <mat-form-field appearance="outline" class="campo-formulario">
+      <mat-label>Descrição *</mat-label>
+      <textarea 
+        matInput 
+        formControlName="descricao" 
+        rows="4"
+        placeholder="Descreva as características do produto..."
+        maxlength="500"
+      ></textarea>
+      <mat-icon matSuffix>description</mat-icon>
+      <mat-hint align="end">{{ controles['descricao'].value?.length || 0 }}/500</mat-hint>
+      @if (controles['descricao'].hasError('required')) {
+        <mat-error>Descrição é obrigatória</mat-error>
+      }
+      @if (controles['descricao'].hasError('minlength')) {
+        <mat-error>Descrição deve ter pelo menos 10 caracteres</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="linha-formulario">
+      <!-- Preço -->
+      <mat-form-field appearance="outline" class="campo-metade">
+        <mat-label>Preço (R$) *</mat-label>
+        <input 
+          matInput 
+          type="number" 
+          formControlName="preco" 
+          step="0.01"
+          min="0.01"
+          max="99999.99"
+          placeholder="0,00"
+        />
+        <mat-icon matSuffix>attach_money</mat-icon>
+        @if (controles['preco'].hasError('required')) {
+          <mat-error>Preço é obrigatório</mat-error>
+        }
+        @if (controles['preco'].hasError('min')) {
+          <mat-error>Preço deve ser maior que zero</mat-error>
+        }
+      </mat-form-field>
+
+      <!-- Categoria -->
+      <mat-form-field appearance="outline" class="campo-metade">
+        <mat-label>Categoria *</mat-label>
+        <mat-select formControlName="categoria">
+          <mat-option value="">Selecione uma categoria</mat-option>
+          @for (categoria of categorias; track categoria) {
+            <mat-option [value]="categoria">{{ categoria }}</mat-option>
+          }
+        </mat-select>
+        <mat-icon matSuffix>category</mat-icon>
+        @if (controles['categoria'].hasError('required')) {
+          <mat-error>Categoria é obrigatória</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="linha-formulario">
+      <!-- Marca -->
+      <mat-form-field appearance="outline" class="campo-metade">
+        <mat-label>Marca</mat-label>
+        <mat-select formControlName="marca">
+          <mat-option value="">Selecione uma marca</mat-option>
+          @for (marca of marcas; track marca) {
+            <mat-option [value]="marca">{{ marca }}</mat-option>
+          }
+        </mat-select>
+        <mat-icon matSuffix>branding_watermark</mat-icon>
+      </mat-form-field>
+
+      <!-- Estoque -->
+      <mat-form-field appearance="outline" class="campo-metade">
+        <mat-label>Estoque *</mat-label>
+        <input 
+          matInput 
+          type="number" 
+          formControlName="estoque" 
+          min="0"
+          max="9999"
+          placeholder="0"
+        />
+        <mat-icon matSuffix>inventory</mat-icon>
+        @if (controles['estoque'].hasError('required')) {
+          <mat-error>Estoque é obrigatório</mat-error>
+        }
+        @if (controles['estoque'].hasError('min')) {
+          <mat-error>Estoque não pode ser negativo</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="linha-formulario">
+      <!-- Tamanho -->
+      <mat-form-field appearance="outline" class="campo-metade">
+        <mat-label>Tamanho</mat-label>
+        <mat-select formControlName="tamanho">
+          <mat-option value="">Selecione um tamanho</mat-option>
+          @for (tamanho of tamanhos; track tamanho) {
+            <mat-option [value]="tamanho">{{ tamanho }}</mat-option>
+          }
+        </mat-select>
+        <mat-icon matSuffix>straighten</mat-icon>
+      </mat-form-field>
+
+      <!-- Cor -->
+      <mat-form-field appearance="outline" class="campo-metade">
+        <mat-label>Cor</mat-label>
+        <mat-select formControlName="cor">
+          <mat-option value="">Selecione uma cor</mat-option>
+          @for (cor of cores; track cor) {
+            <mat-option [value]="cor">{{ cor }}</mat-option>
+          }
+        </mat-select>
+        <mat-icon matSuffix>palette</mat-icon>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="acoes-dialogo">
+  <button 
+    mat-button 
+    type="button" 
+    (click)="onCancelar()" 
+    [disabled]="enviando"
+    class="botao-cancelar">
+    Cancelar
+  </button>
+  <button 
+    mat-raised-button 
+    color="primary" 
+    type="submit" 
+    (click)="onSubmit()" 
+    [disabled]="formularioProduto.invalid || enviando"
+    class="botao-salvar">
+    @if (enviando) {
+      <mat-spinner diameter="20" class="spinner-botao"></mat-spinner>
+      {{ modoEdicao ? 'Atualizando...' : 'Criando...' }}
+    } @else {
+      <mat-icon>{{ modoEdicao ? 'save' : 'add_circle' }}</mat-icon>
+      {{ modoEdicao ? 'Atualizar' : 'Criar' }}
+    }
+  </button>
+</mat-dialog-actions>

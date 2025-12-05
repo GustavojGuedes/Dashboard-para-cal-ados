@@ -1,0 +1,247 @@
+<div class="lista-produtos">
+  <!-- Cabeçalho -->
+  <div class="cabecalho">
+    <div class="cabecalho-titulo">
+      <h1>Catálogo de Calçados</h1>
+      <p class="subtitulo">Gerencie seus produtos de forma eficiente</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="abrirFormularioProduto()">
+      <mat-icon>add</mat-icon>
+      Novo Produto
+    </button>
+  </div>
+
+  <!-- Estatísticas -->
+  <div class="estatisticas" *ngIf="produtos().length > 0">
+    <mat-card class="card-estatistica">
+      <mat-icon class="estatistica-icone" color="primary">inventory</mat-icon>
+      <div class="estatistica-conteudo">
+        <span class="estatistica-valor">{{ totalProdutos() }}</span>
+        <span class="estatistica-label">Total de Produtos</span>
+      </div>
+    </mat-card>
+    <mat-card class="card-estatistica">
+      <mat-icon class="estatistica-icone" color="accent">category</mat-icon>
+      <div class="estatistica-conteudo">
+        <span class="estatistica-valor">{{ categorias().length }}</span>
+        <span class="estatistica-label">Categorias</span>
+      </div>
+    </mat-card>
+    <mat-card class="card-estatistica">
+      <mat-icon class="estatistica-icone" color="warn">trending_up</mat-icon>
+      <div class="estatistica-conteudo">
+        <span class="estatistica-valor">{{ formatarPreco(produtos().reduce((acc, p) => acc + (p.preco || 0), 0)) }}</span>
+        <span class="estatistica-label">Valor Total</span>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Filtros -->
+  <mat-card class="card-filtros">
+    <div class="filtros-container">
+      <mat-form-field appearance="outline" class="campo-busca">
+        <mat-label>Buscar produtos</mat-label>
+        <input
+          matInput
+          [ngModel]="termoBusca()"
+          (ngModelChange)="termoBusca.set($event)"
+          placeholder="Digite nome, marca ou descrição..."
+          (keyup.enter)="aplicarFiltro()"
+        />
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="campo-categoria">
+        <mat-label>Categoria</mat-label>
+        <mat-select 
+          [ngModel]="categoriaSelecionada()" 
+          (ngModelChange)="categoriaSelecionada.set($event)">
+          <mat-option value="">Todas as categorias</mat-option>
+          <mat-option *ngFor="let categoria of categorias()" [value]="categoria">
+            {{ categoria }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="filtros-botoes">
+        <button mat-raised-button color="primary" (click)="aplicarFiltro()">
+          <mat-icon>filter_alt</mat-icon>
+          Aplicar Filtros
+        </button>
+        <button mat-stroked-button color="warn" (click)="limparFiltros()">
+          <mat-icon>clear</mat-icon>
+          Limpar
+        </button>
+      </div>
+    </div>
+  </mat-card>
+
+  <!-- Tabela de Produtos -->
+  <mat-card class="card-tabela">
+    <div class="tabela-container">
+      <!-- Loading State -->
+      @if (produtoService.produtosCarregando()) {
+        <div class="loading-overlay">
+          <mat-spinner diameter="50"></mat-spinner>
+          <p>Carregando produtos...</p>
+        </div>
+      }
+
+      <!-- Error State -->
+      @if (produtoService.erroProdutos()) {
+        <div class="error-state">
+          <mat-icon color="warn">error_outline</mat-icon>
+          <p>{{ produtoService.erroProdutos() }}</p>
+          <button mat-button color="primary" (click)="carregarProdutos()">
+            Tentar novamente
+          </button>
+        </div>
+      }
+
+      <!-- Empty State -->
+      @if (!produtoService.produtosCarregando() && produtosFiltrados().length === 0) {
+        <div class="empty-state">
+          <mat-icon>inventory_2</mat-icon>
+          <h3>Nenhum produto encontrado</h3>
+          <p>Não há produtos cadastrados ou correspondentes aos filtros aplicados</p>
+          <button mat-raised-button color="primary" (click)="abrirFormularioProduto()">
+            <mat-icon>add</mat-icon>
+            Adicionar Primeiro Produto
+          </button>
+        </div>
+      }
+
+      <!-- Table -->
+      @if (produtosFiltrados().length > 0) {
+        <table mat-table [dataSource]="fonteDados" matSort class="tabela-produtos">
+          <!-- ID -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+            <td mat-cell *matCellDef="let produto">
+              <span class="badge-id">#{{ produto.id }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Nome -->
+          <ng-container matColumnDef="nome">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nome</th>
+            <td mat-cell *matCellDef="let produto">
+              <div class="celula-nome">
+                <span class="nome-produto">{{ produto.nome }}</span>
+                <span class="descricao-produto">{{ produto.descricao | slice:0:50 }}{{ produto.descricao.length > 50 ? '...' : '' }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Categoria -->
+          <ng-container matColumnDef="categoria">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Categoria</th>
+            <td mat-cell *matCellDef="let produto">
+              <span class="badge-categoria" [class]="'categoria-' + produto.categoria.toLowerCase()">
+                {{ produto.categoria }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Marca -->
+          <ng-container matColumnDef="marca">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Marca</th>
+            <td mat-cell *matCellDef="let produto">
+              <span class="badge-marca">{{ produto.marca || 'Não informada' }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Preço -->
+          <ng-container matColumnDef="preco">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Preço</th>
+            <td mat-cell *matCellDef="let produto">
+              <span class="preco-produto">{{ formatarPreco(produto.preco) }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Estoque -->
+          <ng-container matColumnDef="estoque">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Estoque</th>
+            <td mat-cell *matCellDef="let produto">
+              <div class="celula-estoque">
+                <span class="badge-estoque" [class]="{
+                  'estoque-alto': (produto.estoque || 0) > 20,
+                  'estoque-medio': (produto.estoque || 0) > 10 && (produto.estoque || 0) <= 20,
+                  'estoque-baixo': (produto.estoque || 0) <= 10
+                }">
+                  {{ produto.estoque || 0 }}
+                </span>
+                @if ((produto.estoque || 0) <= 10) {
+                  <mat-icon class="estoque-alerta" color="warn">warning</mat-icon>
+                }
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Tamanho -->
+          <ng-container matColumnDef="tamanho">
+            <th mat-header-cell *matHeaderCellDef>Tamanho</th>
+            <td mat-cell *matCellDef="let produto">
+              <span class="badge-tamanho">{{ produto.tamanho || '-' }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Cor -->
+          <ng-container matColumnDef="cor">
+            <th mat-header-cell *matHeaderCellDef>Cor</th>
+            <td mat-cell *matCellDef="let produto">
+              <div class="celula-cor">
+                <span 
+                  class="indicador-cor" 
+                  [style.background]="obterCorHex(produto.cor)"
+                  [matTooltip]="produto.cor ||   'Não informada'"
+                ></span>
+                <span class="nome-cor">{{ produto.cor || 'Não informada' }}</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Ações -->
+          <ng-container matColumnDef="acoes">
+            <th mat-header-cell *matHeaderCellDef>Ações</th>
+            <td mat-cell *matCellDef="let produto">
+              <div class="celula-acoes">
+                <button 
+                  mat-icon-button 
+                  color="primary" 
+                  [matMenuTriggerFor]="menu" 
+                  [matMenuTriggerData]="{produto}"
+                  aria-label="Ações do produto">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="abrirFormularioProduto(produto)">
+                    <mat-icon color="primary">edit</mat-icon>
+                    <span>Editar</span>
+                  </button>
+                  <button mat-menu-item (click)="excluirProduto(produto)">
+                    <mat-icon color="warn">delete</mat-icon>
+                    <span>Excluir</span>
+                  </button>
+                </mat-menu>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="colunasExibidas"></tr>
+          <tr mat-row *matRowDef="let linha; columns: colunasExibidas;"></tr>
+        </table>
+
+        <!-- Paginação -->
+        <mat-paginator
+          [length]="totalProdutos()"
+          [pageSize]="tamanhoPagina()"
+          [pageSizeOptions]="[5, 10, 25, 50]"
+          (page)="onMudancaPagina($event)"
+          showFirstLastButtons
+          aria-label="Selecione página de produtos">
+        </mat-paginator>
+      }
+    </div>
+  </mat-card>
+</div>

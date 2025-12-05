@@ -1,0 +1,305 @@
+.lista-produtos {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  .cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .cabecalho-titulo {
+      h1 {
+        margin: 0;
+        color: #3f51b5;
+        font-weight: 500;
+        font-size: 2rem;
+      }
+
+      .subtitulo {
+        margin: 8px 0 0 0;
+        color: #666;
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .estatisticas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+
+    .card-estatistica {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+
+      .estatistica-icone {
+        font-size: 40px;
+        height: 40px;
+        width: 40px;
+      }
+
+      .estatistica-conteudo {
+        display: flex;
+        flex-direction: column;
+
+        .estatistica-valor {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #333;
+        }
+
+        .estatistica-label {
+          font-size: 0.875rem;
+          color: #666;
+        }
+      }
+    }
+  }
+
+  .card-filtros {
+    .filtros-container {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+
+      @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .campo-busca {
+        flex: 1;
+        min-width: 300px;
+      }
+
+      .campo-categoria {
+        min-width: 200px;
+      }
+
+      .filtros-botoes {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+
+        @media (max-width: 768px) {
+          width: 100%;
+          justify-content: stretch;
+
+          button {
+            flex: 1;
+          }
+        }
+      }
+    }
+  }
+
+  .card-tabela {
+    overflow: hidden;
+
+    .tabela-container {
+      position: relative;
+      min-height: 400px;
+
+      .loading-overlay,
+      .error-state,
+      .empty-state {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.9);
+        z-index: 1000;
+        gap: 16px;
+        padding: 40px;
+        text-align: center;
+
+        mat-icon {
+          font-size: 64px;
+          height: 64px;
+          width: 64px;
+          opacity: 0.5;
+        }
+
+        h3 {
+          margin: 0;
+          color: #333;
+          font-weight: 500;
+        }
+
+        p {
+          margin: 0;
+          color: #666;
+          max-width: 400px;
+        }
+      }
+
+      .error-state {
+        mat-icon {
+          color: #f44336;
+        }
+      }
+
+      .tabela-produtos {
+        width: 100%;
+
+        .badge-id {
+          background: #e3f2fd;
+          color: #1976d2;
+          padding: 4px 8px;
+          border-radius: 12px;
+          font-size: 0.75rem;
+          font-weight: 600;
+        }
+
+        .celula-nome {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+
+          .nome-produto {
+            font-weight: 500;
+            color: #333;
+          }
+
+          .descricao-produto {
+            font-size: 0.875rem;
+            color: #666;
+            line-height: 1.4;
+          }
+        }
+
+        .badge-categoria {
+          padding: 4px 12px;
+          border-radius: 16px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+
+          &.categoria-esportivo {
+            background: #e3f2fd;
+            color: #1976d2;
+          }
+
+          &.categoria-social {
+            background: #f3e5f5;
+            color: #7b1fa2;
+          }
+
+          &.categoria-casual {
+            background: #e8f5e9;
+            color: #388e3c;
+          }
+
+          &.categoria-botas {
+            background: #fff3e0;
+            color: #f57c00;
+          }
+        }
+
+        .badge-marca {
+          background: #f5f5f5;
+          color: #666;
+          padding: 4px 8px;
+          border-radius: 12px;
+          font-size: 0.75rem;
+        }
+
+        .preco-produto {
+          font-weight: 600;
+          color: #2e7d32;
+        }
+
+        .celula-estoque {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          .badge-estoque {
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 0.875rem;
+            font-weight: 600;
+
+            &.estoque-alto {
+              background: #e8f5e9;
+              color: #2e7d32;
+            }
+
+            &.estoque-medio {
+              background: #fff3e0;
+              color: #f57c00;
+            }
+
+            &.estoque-baixo {
+              background: #ffebee;
+              color: #c62828;
+            }
+          }
+
+          .estoque-alerta {
+            font-size: 18px;
+            height: 18px;
+            width: 18px;
+          }
+        }
+
+        .badge-tamanho {
+          background: #f5f5f5;
+          color: #333;
+          padding: 4px 12px;
+          border-radius: 50%;
+          font-size: 0.875rem;
+          font-weight: 600;
+          min-width: 32px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .celula-cor {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          .indicador-cor {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #e0e0e0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          }
+
+          .nome-cor {
+            font-size: 0.875rem;
+            color: #666;
+          }
+        }
+
+        .celula-acoes {
+          display: flex;
+          justify-content: flex-end;
+        }
+      }
+
+      mat-paginator {
+        border-top: 1px solid #e0e0e0;
+      }
+    }
+  }
+}
